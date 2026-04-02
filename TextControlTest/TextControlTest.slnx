@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution/">
+    <File Path="../README.md" />
+  </Folder>
   <Project Path="../SharedLibrary/SharedLibrary.csproj" Id="5c90c81c-8d1b-4d03-9284-921cd3dfbc5f" />
   <Project Path="TextControlTest.csproj" />
 </Solution>
