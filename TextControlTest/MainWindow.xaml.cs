@@ -69,4 +69,41 @@ public partial class MainWindow : Window
 
         pdfViewerWindow.Show();
     }
+
+    /// <summary>
+    /// When you call the GeneratePdf on an STA thread it now renders correctly again.
+    /// </summary>
+    private async void StaThreadPreview(object sender, RoutedEventArgs e)
+    {
+        TextControl.Save(out var bytes, BinaryStreamType.InternalUnicodeFormat);
+
+        var pdfBytes = await ExecuteOnStaThread(() =>
+        {
+            return SharedRenderingService.GeneratePdf(bytes);
+        });
+
+        var pdfViewerWindow = new PdfViewer("STA THREAD PREVIEW", pdfBytes) { Owner = this };
+
+        pdfViewerWindow.Show();
+    }
+
+    private static Task<T> ExecuteOnStaThread<T>(Func<T> func)
+    {
+        var tcs = new TaskCompletionSource<T>();
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                tcs.SetResult(func());
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        return tcs.Task;
+    }
+
 }

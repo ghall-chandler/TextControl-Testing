@@ -2,6 +2,35 @@
 
 This project is reproducing a possible issue with the ServerTextControl PDF rendering.
 
+## UPDATE: BUGFIX!
+
+We have determined the cause of the problem and that is that the ServerTextControl MUST run on a STA thread to render correctly. The default behaviour of `Task.Run` is to execute on a MTA thread which is the cause of the problem.
+
+Here is an example of how to run on an STA thread:
+```
+    private static Task<T> ExecuteOnStaThread<T>(Func<T> func)
+    {
+        var tcs = new TaskCompletionSource<T>();
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                tcs.SetResult(func());
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        return tcs.Task;
+    }
+```
+
+The example application has been updated with a new button to render correctly off the main thread.
+
+
 ## Details
 
 There seems to be a bug when rendering a document that contains shapes. When we try to save that document to PDF using the ServerTextControl component from a WPF application the colours of the shapes are not correct. It seems like the Red and Blue values are inverted (ie. red becomes blue and blue become red).

@@ -10,6 +10,7 @@
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
             <Button Content="Generate Preview Sync" Click="SyncPreview" Margin="10,10,10,10" />
             <Button Content="Generate Preview Async" Click="AsyncPreview" Margin="10,10,10,10" />
+            <Button Content="Generate Preview STA THREAD (BUGFIX!)" Click="StaThreadPreview" Margin="10,10,10,10" />
         </StackPanel>
         <tx:TextControl Name="TextControl"  Loaded="TextControl_Loaded"/>
     </DockPanel>
